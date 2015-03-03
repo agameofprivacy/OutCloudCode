@@ -1,0 +1,11 @@
+{
+    "applications": {
+        "Out": {
+            "applicationId": "BIV65YI6yH4JPzMDiMro4aHLX0THLJEq40X3XTfR", 
+            "masterKey": "3Lxxm8ThTL4zcF0pXozosrQePtCweESb3KFsRjND"
+        }, 
+        "_default": {
+            "link": "Out"
+        }
+    }
+}
