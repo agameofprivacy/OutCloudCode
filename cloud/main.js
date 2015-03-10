@@ -23,10 +23,10 @@ Parse.Cloud.define("challengeOfDifficulty", function(request, response) {
 Parse.Cloud.afterSave("Notification", function(request) {
   // Our "Notification" class has a "text" key with the body of the comment itself
   var notificationType = request.object.get('type');
- 
+  var receiverObject = request.object.get('receiver');
   var pushQuery = new Parse.Query(Parse.Installation);
   pushQuery.equalTo('deviceType', 'ios');
-  pushQuery.equalTo('currentUser', request.object.get('receiver'));
+  pushQuery.equalTo('currentUser', receiverObject);
     
   Parse.Push.send({
     where: pushQuery, // Set our Installation query
@@ -35,6 +35,7 @@ Parse.Cloud.afterSave("Notification", function(request) {
     }
   }, {
     success: function() {
+    console.log("success!")
       // Push was successful
     },
     error: function(error) {
