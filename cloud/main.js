@@ -27,7 +27,7 @@ Parse.Cloud.afterSave("Notification", function(request) {
 		var receiverObject = request.object.get('receiver');
 		if (receiverObject.id != senderObject.id) {
 			var receiverAlias = receiverObject.get('alias');
-			var senderAlias = senderObject.get('alias');
+			var senderAlias = "";
 			var actionString = "";
 			if (notificationType == "comment" || notificationType == "like"){
 				var activityObject = request.object.get('activity');
@@ -86,44 +86,66 @@ Parse.Cloud.afterSave("Notification", function(request) {
 				});
 			}
 			else if (notificationType == "followRequestApproved"){
-				var receiverNotificationText = senderAlias + "approved your follow request.";
-				var receiverPushQuery = new Parse.Query(Parse.Installation);
-				receiverPushQuery.equalTo('deviceType', 'ios');
-				receiverPushQuery.equalTo('currentUser', receiverObject);
-				Parse.Push.send({
-					where: receiverPushQuery, // Set our Installation query
-					data: {
-						alert: receiverNotificationText
-					}
-				}, {
-					success: function() {
-						console.log("success!")
-							// Push was successful
-						console.log(receiverPushQuery);
+				var userQuery = new Parse.Query("_User");
+				userQuery.get(senderObject.id, {
+					success: function(senderObjectReal) {
+						// The object was retrieved successfully.
+						senderAlias = senderObjectReal.get("username");
+
+						var receiverNotificationText = senderAlias + " approved your follow request.";
+						var receiverPushQuery = new Parse.Query(Parse.Installation);
+						receiverPushQuery.equalTo('deviceType', 'ios');
+						receiverPushQuery.equalTo('currentUser', receiverObject);
+						Parse.Push.send({
+							where: receiverPushQuery, // Set our Installation query
+							data: {
+								alert: receiverNotificationText
+							}
+						}, {
+							success: function() {
+								console.log("success!")
+									// Push was successful
+								console.log(receiverPushQuery);
+							},
+							error: function(error) {
+								throw "Got an error " + error.code + " : " + error.message;
+							}
+						});
 					},
-					error: function(error) {
-						throw "Got an error " + error.code + " : " + error.message;
+					error: function(object, error){
+					
 					}
 				});
 			}
 			else if (notificationType == "followRequestSent"){
-				var receiverNotificationText = senderAlias + "sent you a follow request.";
-				var receiverPushQuery = new Parse.Query(Parse.Installation);
-				receiverPushQuery.equalTo('deviceType', 'ios');
-				receiverPushQuery.equalTo('currentUser', receiverObject);
-				Parse.Push.send({
-					where: receiverPushQuery, // Set our Installation query
-					data: {
-						alert: receiverNotificationText
-					}
-				}, {
-					success: function() {
-						console.log("success!")
-							// Push was successful
-						console.log(receiverPushQuery);
+				var userQuery = new Parse.Query("_User");
+				userQuery.get(senderObject.id, {
+					success: function(senderObjectReal) {
+						// The object was retrieved successfully.
+						senderAlias = senderObjectReal.get("username");
+
+						var receiverNotificationText = senderAlias + " sent you a follow request.";
+						var receiverPushQuery = new Parse.Query(Parse.Installation);
+						receiverPushQuery.equalTo('deviceType', 'ios');
+						receiverPushQuery.equalTo('currentUser', receiverObject);
+						Parse.Push.send({
+							where: receiverPushQuery, // Set our Installation query
+							data: {
+								alert: receiverNotificationText
+							}
+						}, {
+							success: function() {
+								console.log("success!")
+									// Push was successful
+								console.log(receiverPushQuery);
+							},
+							error: function(error) {
+								throw "Got an error " + error.code + " : " + error.message;
+							}
+						});
 					},
-					error: function(error) {
-						throw "Got an error " + error.code + " : " + error.message;
+					error: function(object, error){
+					
 					}
 				});
 			}
