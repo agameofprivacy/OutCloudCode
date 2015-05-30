@@ -1,3 +1,20 @@
+var fs = require('fs');
+var layer = require('cloud/layer-parse-module/layer-module.js');
+
+var layerProviderID = '7f9c41c4-b3e9-11e4-b65d-7dab3d0102b4';
+var layerKeyID = '207c9852-06f9-11e5-8907-84d07e027702';
+var privateKey = fs.readFileSync('cloud/layer-parse-module/keys/layer-key.js');
+layer.initialize(layerProviderID, layerKeyID, privateKey);
+
+Parse.Cloud.define("generateToken", function(request, response) {
+    var userID = request.params.userID;
+    var nonce = request.params.nonce;
+    if (!userID) throw new Error('Missing userID parameter');
+    if (!nonce) throw new Error('Missing nonce parameter');
+        response.success(layer.layerIdentityToken(userID, nonce));
+});
+
+
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
 Parse.Cloud.define("hello", function(request, response) {
